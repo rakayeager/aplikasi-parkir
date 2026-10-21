@@ -1,0 +1,158 @@
+@extends('layouts.app')
+@section('title', 'Master Kendaraan')
+
+@section('content')
+<div class="row">
+    <!-- Tabel Master Kendaraan (Full Width) -->
+    <div class="col-12">
+        <div class="nexa-card overflow-hidden">
+            <div class="p-4 pb-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #FAFAFA;">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width: 44px; height: 44px; background: #FCE178; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #18181B;">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold text-dark">Data Master Kendaraan</h5>
+                        <small class="text-muted">{{ $kendaraans->count() }} unit armada kendaraan terdaftar</small>
+                    </div>
+                </div>
+
+                <!-- Tombol Pemicu Modal Tambah -->
+                <button type="button" class="nexa-btn-yellow" data-bs-toggle="modal" data-bs-target="#tambahKendaraanModal">
+                    <i class="bi bi-plus-circle-fill"></i> Tambah Kendaraan
+                </button>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background: #FAFAFA;">
+                            <tr>
+                                <th class="py-3 px-4 text-uppercase text-secondary" style="font-size: 0.75rem; font-weight: 700;">Plat Nomor</th>
+                                <th class="py-3 px-4 text-uppercase text-secondary" style="font-size: 0.75rem; font-weight: 700;">Jenis / Tipe</th>
+                                <th class="py-3 px-4 text-uppercase text-secondary" style="font-size: 0.75rem; font-weight: 700;">Warna</th>
+                                <th class="py-3 px-4 text-uppercase text-secondary" style="font-size: 0.75rem; font-weight: 700;">Pemilik</th>
+                                <th class="py-3 px-4 text-uppercase text-secondary text-end" style="font-size: 0.75rem; font-weight: 700;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($kendaraans as $k)
+                            <tr>
+                                <td class="py-3 px-4">
+                                    <span class="badge bg-dark text-warning fs-6 px-3 py-2" style="font-family: monospace; border-radius: 8px;">
+                                        {{ $k->plat_nomor }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 fw-bold text-dark">{{ $k->jenis_kendaraan }}</td>
+                                <td class="py-3 px-4 text-secondary">{{ $k->warna ?? '-' }}</td>
+                                <td class="py-3 px-4 text-secondary">{{ $k->pemilik ?? '-' }}</td>
+                                <td class="py-3 px-4 text-end">
+                                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold" style="background: #FCE178; color: #18181B;" data-bs-toggle="modal" data-bs-target="#editKendaraanModal{{ $k->id_kendaraan }}">
+                                        <i class="bi bi-pencil-fill me-1"></i>Edit
+                                    </button>
+                                    <form action="{{ route('admin.kendaraan.destroy', $k->id_kendaraan) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-bold ms-1" onclick="return confirm('Hapus data kendaraan ini?')">
+                                            <i class="bi bi-trash-fill me-1"></i>Hapus
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                            <!-- Modal Edit Kendaraan -->
+                            <div class="modal fade" id="editKendaraanModal{{ $k->id_kendaraan }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 rounded-4 shadow">
+                                        <div class="modal-header bg-light border-0 py-3 px-4">
+                                            <h6 class="modal-title fw-bold text-dark">
+                                                <i class="bi bi-pencil-square me-2 text-warning"></i>Edit Kendaraan: {{ $k->plat_nomor }}
+                                            </h6>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form action="{{ route('admin.kendaraan.update', $k->id_kendaraan) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-body p-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Plat Nomor</label>
+                                                    <input type="text" name="plat_nomor" class="form-control text-uppercase" value="{{ $k->plat_nomor }}" required style="border-radius: 12px; padding: 10px 14px;">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Jenis Kendaraan</label>
+                                                    <input type="text" name="jenis_kendaraan" class="form-control" value="{{ $k->jenis_kendaraan }}" required style="border-radius: 12px; padding: 10px 14px;">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Warna</label>
+                                                    <input type="text" name="warna" class="form-control" value="{{ $k->warna }}" style="border-radius: 12px; padding: 10px 14px;">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Pemilik</label>
+                                                    <input type="text" name="pemilik" class="form-control" value="{{ $k->pemilik }}" style="border-radius: 12px; padding: 10px 14px;">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0 p-3 px-4 bg-light">
+                                                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                                                <button type="submit" class="nexa-btn-yellow">Simpan Perubahan</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Kendaraan Baru (Muncul saat tombol diklik) -->
+<div class="modal fade" id="tambahKendaraanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header bg-light border-0 py-3 px-4">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width: 34px; height: 34px; background: #FCE178; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #18181B;">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+                    <h6 class="modal-title mb-0 fw-bold text-dark">Tambah Kendaraan Baru</h6>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.kendaraan.store') }}" method="POST">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Plat Nomor</label>
+                        <input type="text" name="plat_nomor" class="form-control text-uppercase" placeholder="Contoh: B 1234 CD" required
+                               style="border-radius: 12px; border: 2px solid #E4E4E7; padding: 11px 16px; font-weight: 700; letter-spacing: 1px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Jenis / Tipe Kendaraan</label>
+                        <input type="text" name="jenis_kendaraan" class="form-control" placeholder="Contoh: Vario / Innova" required
+                               style="border-radius: 12px; border: 2px solid #E4E4E7; padding: 11px 16px; font-weight: 600;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Warna Kendaraan</label>
+                        <input type="text" name="warna" class="form-control" placeholder="Contoh: Hitam Metalik"
+                               style="border-radius: 12px; border: 2px solid #E4E4E7; padding: 11px 16px; font-weight: 600;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Nama Pemilik</label>
+                        <input type="text" name="pemilik" class="form-control" placeholder="Contoh: Budi Santoso"
+                               style="border-radius: 12px; border: 2px solid #E4E4E7; padding: 11px 16px; font-weight: 600;">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 px-4 bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="nexa-btn-yellow">
+                        <i class="bi bi-plus-circle-fill"></i> Simpan Kendaraan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
